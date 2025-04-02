@@ -10,34 +10,93 @@ import {
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import { useEffect, useState } from "react";
-import { Poll } from "../../types/db";
+import { Poll, Vote } from "../../types/db";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../providers/AuthProvider";
 
 export default function PollDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [poll, setPoll] = useState<Poll | null>(null);
+  const [userVote, setUserVote] = useState<Vote | null>(null);
 
   const [selected, setSelected] = useState("");
 
+  const { user } = useAuth();
+
   useEffect(() => {
     const fetchPolls = async () => {
-      console.log("Fetching...");
-
       let { data, error } = await supabase
         .from("polls")
         .select("*")
         .eq("id", Number.parseInt(id))
         .single();
       if (error) {
-        Alert.alert("Error fetching dara");
+        Alert.alert("Error fetching data");
       }
       setPoll(data);
     };
+
+    const fetchUserVotes = async () => {
+      if (!user) {
+        Alert.alert("Error", "You must be logged in to vote.");
+        return;
+      }
+      let { data, error } = await supabase
+        .from("votes")
+        .select("*")
+        .eq("poll_id", Number.parseInt(id))
+        .eq("user_id", user.id)
+        .limit(1)
+        .single();
+
+      setUserVote(data);
+      if (data) {
+        setSelected(data.option);
+      }
+    };
+
     fetchPolls();
+    fetchUserVotes();
   }, []);
 
-  const vote = () => {
-    console.warn("Vote: ", selected);
+  const vote = async () => {
+    if (!user) {
+      Alert.alert("Error", "You must be logged in to vote.");
+      return;
+    }
+
+    if (!poll?.id) {
+      Alert.alert("Error", "Poll ID is missing.");
+      return;
+    }
+
+    const newVote: {
+      id?: number;
+      option: string;
+      poll_id: number;
+      user_id: string;
+    } = {
+      option: selected,
+      poll_id: poll.id,
+      user_id: user.id,
+    };
+    if (userVote) {
+      newVote.id = userVote.id;
+    }
+
+    const { data, error } = await supabase
+      .from("votes")
+      .upsert([newVote])
+      .select()
+      .single();
+
+    if (error) {
+      console.log(error);
+      Alert.alert("Failed to vote");
+    } else {
+      setUserVote(data);
+      Alert.alert("Thank you for your vote");
+    }
   };
 
   if (!poll) {
