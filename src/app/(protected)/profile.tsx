@@ -2,7 +2,6 @@ import { Button, Text } from "react-native";
 import { View } from "react-native";
 import { useAuth } from "../../providers/AuthProvider";
 import { supabase } from "../../lib/supabase";
-import { Redirect } from "expo-router";
 
 export default function ProfileScreen() {
   const { user } = useAuth();
