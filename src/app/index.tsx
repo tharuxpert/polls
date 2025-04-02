@@ -15,7 +15,7 @@ export default function HomeScreen() {
 
       let { data, error } = await supabase.from("polls").select("*");
       if (error) {
-        Alert.alert('Error fetching dara');
+        Alert.alert("Error fetching dara");
       }
       setPolls(data || []);
     };
@@ -32,14 +32,12 @@ export default function HomeScreen() {
               <AntDesign name="plus" size={20} color="grey" />
             </Link>
           ),
-          // headerRight: () => (
-          //   <AntDesign
-          //     onPress={() => router.push("polls/new")}
-          //     name="plus"
-          //     size={20}
-          //     color="grey"
-          //   />
-          // ),
+          headerLeft: () => (
+            <Link href={"/profile"}>
+              <AntDesign name="user" size={20} color="grey" />
+            </Link>
+          ),
+          headerTitleAlign: "center",
         }}
       />
       <FlatList
