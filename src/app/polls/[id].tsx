@@ -1,11 +1,11 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import {
   ActivityIndicator,
   Alert,
-  Button,
   Pressable,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
@@ -38,7 +38,6 @@ export default function PollDetails() {
 
     const fetchUserVotes = async () => {
       if (!user) {
-        Alert.alert("Error", "You must be logged in to vote.");
         return;
       }
       let { data, error } = await supabase
@@ -61,7 +60,6 @@ export default function PollDetails() {
 
   const vote = async () => {
     if (!user) {
-      Alert.alert("Error", "You must be logged in to vote.");
       return;
     }
 
@@ -78,7 +76,7 @@ export default function PollDetails() {
     } = {
       option: selected,
       poll_id: poll.id,
-      user_id: user.id,
+      user_id: user?.id,
     };
     if (userVote) {
       newVote.id = userVote.id;
@@ -95,7 +93,9 @@ export default function PollDetails() {
       Alert.alert("Failed to vote");
     } else {
       setUserVote(data);
-      Alert.alert("Thank you for your vote");
+      Alert.alert("Great!", "Thank you for your vote", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
     }
   };
 
@@ -105,7 +105,11 @@ export default function PollDetails() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: "Poll Voting" }} />
+      <Stack.Screen
+        options={{
+          title: "Poll Voting",
+        }}
+      />
 
       <Text style={styles.question}>{poll.question}</Text>
 
@@ -119,14 +123,16 @@ export default function PollDetails() {
             <Feather
               name={option === selected ? "check-circle" : "circle"}
               size={18}
-              color={option === selected ? "green" : "grey"}
+              color={option === selected ? "green" : "#C8ACD6"}
             />
-            <Text>{option}</Text>
+            <Text style={styles.optionText}>{option}</Text>
           </Pressable>
         ))}
       </View>
 
-      <Button onPress={vote} title="Vote" />
+      <TouchableOpacity style={styles.voteButton} onPress={vote}>
+        <Text style={styles.voteButtonText}>Vote</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -135,17 +141,35 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     gap: 10,
+    flex: 1,
+    backgroundColor: "#17153B",
   },
   question: {
     fontSize: 20,
     fontWeight: "600",
+    color: "#FFE1FF",
   },
   optionContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#433D8B",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 25,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  optionText: { color: "#FFCCEA" },
+  voteButton: {
+    padding: 5,
+    margin: 10,
+    backgroundColor: "#C8ACD6",
+    borderRadius: 10,
+    // borderColor: "#198fc2",
+    // borderWidth: 5,
+  },
+  voteButtonText: {
+    fontSize: 26,
+    textAlign: "center",
+    color: "#2E236C",
+    fontWeight: "600",
   },
 });

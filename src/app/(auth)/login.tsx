@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, View, AppState, Text } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  View,
+  AppState,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { supabase } from "../../lib/supabase";
 import { Button, Input } from "@rneui/themed";
 import { Stack } from "expo-router";
@@ -46,45 +53,57 @@ export default function Auth() {
   }
 
   return (
-      <View style={styles.container}>
-          <Stack.Screen options={{title:"Login"}} />
-      <Text style={{ fontWeight: "500", fontSize: 20 }}>
+    <View style={styles.container}>
+      <Stack.Screen options={{ title: "Login" }} />
+      <Text style={{ fontWeight: "500", fontSize: 20, color: "#FFE1FF" }}>
         Sign in or Create an account
       </Text>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
           label="Email"
-          leftIcon={{ type: "font-awesome", name: "envelope" }}
+          leftIcon={{
+            type: "font-awesome",
+            name: "envelope",
+            color: "#C8ACD6",
+          }}
           onChangeText={(text) => setEmail(text)}
           value={email}
           placeholder="email@address.com"
           autoCapitalize={"none"}
+          labelStyle={{ color: "white" }}
+          style={{ color: "#f7edf7" }}
         />
       </View>
       <View style={styles.verticallySpaced}>
         <Input
           label="Password"
-          leftIcon={{ type: "font-awesome", name: "lock" }}
+          leftIcon={{ type: "font-awesome", name: "lock", color: "#C8ACD6" }}
           onChangeText={(text) => setPassword(text)}
           value={password}
           secureTextEntry={true}
           placeholder="Password"
           autoCapitalize={"none"}
+          labelStyle={{ color: "white" }}
+          style={{ color: "#f7edf7" }}
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button
-          title="Sign in"
+        <TouchableOpacity
+          style={styles.buttons}
           disabled={loading}
           onPress={() => signInWithEmail()}
-        />
+        >
+          <Text style={styles.buttonText}>Sign in</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.verticallySpaced}>
-        <Button
-          title="Sign up"
+        <TouchableOpacity
+          style={styles.buttons}
           disabled={loading}
           onPress={() => signUpWithEmail()}
-        />
+        >
+          <Text style={styles.buttonText}>Sign up</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -92,8 +111,10 @@ export default function Auth() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
+    paddingTop: 30,
+    flex: 1,
     padding: 12,
+    backgroundColor: "#17153B",
   },
   verticallySpaced: {
     paddingTop: 4,
@@ -102,5 +123,16 @@ const styles = StyleSheet.create({
   },
   mt20: {
     marginTop: 20,
+  },
+  buttons: {
+    padding: 5,
+    backgroundColor: "#C8ACD6",
+    borderRadius: 10,
+  },
+  buttonText: {
+    fontSize: 20,
+    textAlign: "center",
+    color: "#2E236C",
+    fontWeight: "500",
   },
 });
