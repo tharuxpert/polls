@@ -3,11 +3,10 @@ import { Alert, FlatList, StyleSheet, Text, View } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-
-const polls = [{ id: 1 }, { id: 2 }, { id: 3 }];
+import { Poll } from "../types/db";
 
 export default function HomeScreen() {
-  const [polls, setPolls] = useState<any[]>([]);
+  const [polls, setPolls] = useState<Poll[]>([]);
 
   useEffect(() => {
     const fetchPolls = async () => {
@@ -46,7 +45,7 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <Link href={`polls/${item.id}`} style={styles.pollContainer}>
             <Text style={styles.pollTitle}>
-              {item.id}: Example poll question
+              { item.question}
             </Text>
           </Link>
         )}
